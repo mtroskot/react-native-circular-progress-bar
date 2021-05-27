@@ -20,7 +20,7 @@ export default function App() {
     <View style={styles.container}>
       <CircularProgressBar
         ref={progressBarRef}
-        color={'#b7b701'}
+        color={'#9b9b62'}
         // animateProgress={animateProgress}
         // animationConfig={{ duration: 1000 }}
         // backgroundProgressBarColor={'#aad2b4'}
