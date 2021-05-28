@@ -3,10 +3,11 @@ import { StyleSheet, View, Text, Switch } from 'react-native';
 import Slider from '@react-native-community/slider';
 import CircularProgressBar from 'react-native-circular-progress-bar';
 
-export default function AppAndroid() {
+export default function App() {
   const [progress, setProgress] = useState(50);
-  const [progressDirection, setProgressDirection] = useState<0 | 1>(0);
-  const [startAngle, setStartAngle] = useState(0);
+  const [clockwise, setClockwise] = useState(true);
+  const [startAngle, setStartAngle] = useState(270);
+  const [archAngle, setArchAngle] = useState(0);
   const [progressBarWidth, setProgressBarWidth] = useState(10);
   const [roundBorder, setRoundBorder] = useState(false);
   const [indeterminateMode, setIndeterminateMode] = useState(false);
@@ -21,14 +22,14 @@ export default function AppAndroid() {
       <CircularProgressBar
         ref={progressBarRef}
         animateProgress={animateProgress}
-        // animationConfig={{ duration: 1000 }}
         backgroundProgressBarColor={'#aad2b4'}
         progressBarColor={'#be2020'}
         backgroundProgressBarWidth={backgroundProgressBarWidth}
         progressBarWidth={progressBarWidth}
-        progress={progress}
+        fill={progress}
         startAngle={startAngle}
-        progressDirection={progressDirection}
+        archAngle={archAngle}
+        clockwiseFill={clockwise}
         roundBorder={roundBorder}
         indeterminateMode={indeterminateMode}
         matchAngleAndProgress={matchAngleAndProgress}
@@ -37,19 +38,19 @@ export default function AppAndroid() {
           progressDelay: 0,
           progressInterpolator: 3,
         }}
-        progressBarGradient={{
-          startColor: 'red',
-          endColor: 'grey',
-          gradientDirection: 1,
-        }}
-        backgroundProgressBarGradient={{
-          startColor: 'green',
-          endColor: 'yellow',
-          gradientDirection: 2,
-        }}
-        style={[styles.box, { transform: [{ rotate: '-120deg' }] }]}
+        // progressBarGradient={{
+        //   startColor: 'red',
+        //   endColor: 'grey',
+        //   gradientDirection: 1,
+        // }}
+        // backgroundProgressBarGradient={{
+        //   startColor: 'green',
+        //   endColor: 'yellow',
+        //   gradientDirection: 2,
+        // }}
+        style={[styles.box, { transform: [{ rotate: `0deg` }] }]}
       />
-      <Text>Progress</Text>
+      <Text>Progress {progress}</Text>
       <Slider
         style={{ width: 200 }}
         value={progress}
@@ -58,7 +59,7 @@ export default function AppAndroid() {
         step={1}
         maximumValue={100}
       />
-      <Text>Progress Bar Width</Text>
+      <Text>Progress Bar Width {progressBarWidth}</Text>
       <Slider
         style={{ width: 200 }}
         value={progressBarWidth}
@@ -67,7 +68,7 @@ export default function AppAndroid() {
         step={1}
         maximumValue={100}
       />
-      <Text>Background Progress Bar Width</Text>
+      <Text>Background Progress Bar Width {backgroundProgressBarWidth}</Text>
       <Slider
         style={{ width: 200 }}
         value={backgroundProgressBarWidth}
@@ -76,20 +77,26 @@ export default function AppAndroid() {
         step={1}
         maximumValue={100}
       />
-      <Text>Start Angle</Text>
+      <Text>Arch Angle {archAngle}</Text>
+      <Slider
+        style={{ width: 200 }}
+        value={archAngle}
+        onValueChange={setArchAngle}
+        minimumValue={0}
+        step={1}
+        maximumValue={360}
+      />
+      <Text>Start Angle {startAngle}</Text>
       <Slider
         style={{ width: 200 }}
         value={startAngle}
         onValueChange={setStartAngle}
         minimumValue={0}
         step={1}
-        maximumValue={360}
+        maximumValue={270}
       />
-      <Text>Anti Clockwise Direction</Text>
-      <Switch
-        value={progressDirection !== 0}
-        onValueChange={(value) => setProgressDirection(value ? 1 : 0)}
-      />
+      <Text>Clockwise</Text>
+      <Switch value={clockwise} onValueChange={setClockwise} />
       <Text>Round Border</Text>
       <Switch value={roundBorder} onValueChange={setRoundBorder} />
       <Text>IndeterminateMode</Text>
@@ -101,7 +108,6 @@ export default function AppAndroid() {
       />
       <Text>Animate Progress</Text>
       <Switch value={animateProgress} onValueChange={setAnimateProgress} />
-      {/*<Button title={'animate progress'} onPress={animateProgress} />*/}
     </View>
   );
 }

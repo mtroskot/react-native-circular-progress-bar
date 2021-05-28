@@ -3,11 +3,11 @@ package com.reactnativecircularprogressbar
 import android.animation.TimeInterpolator
 import android.graphics.Color
 import android.util.Log
-import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.LinearInterpolator
+import com.facebook.common.logging.FLog
 import com.facebook.infer.annotation.Assertions
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
@@ -15,8 +15,6 @@ import com.facebook.react.common.MapBuilder
 import com.facebook.react.uimanager.SimpleViewManager
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.annotations.ReactProp
-import com.mikhaellopez.circularprogressbar.CircularProgressBar
-
 
 class CircularProgressBarViewManager : SimpleViewManager<CircularProgressBar>() {
   private var matchAngleAndProgress = false
@@ -53,23 +51,23 @@ class CircularProgressBarViewManager : SimpleViewManager<CircularProgressBar>() 
     circularProgressBar.backgroundProgressBarWidth = width;
   }
 
-  @ReactProp(name = "progress")
-  fun setProgress(circularProgressBar: CircularProgressBar, progress: Float) {
-    progressFromProp = progress;
-    calculateProgress(circularProgressBar, progress, matchAngleAndProgress, animateProgress)
+  @ReactProp(name = "fill")
+  fun setProgress(circularProgressBar: CircularProgressBar, fill: Float) {
+    progressFromProp = fill;
+    calculateProgress(circularProgressBar, fill, matchAngleAndProgress, animateProgress)
   }
 
-  @ReactProp(name = "startAngle")
-  fun setStartAngle(circularProgressBar: CircularProgressBar, startAngle: Float) {
-    circularProgressBar.startAngle = startAngle;
+  @ReactProp(name = "archAngle")
+  fun setArchAngle(circularProgressBar: CircularProgressBar, archAngle: Float) {
+    circularProgressBar.startAngle = archAngle;
     if (matchAngleAndProgress) {
       calculateProgress(circularProgressBar, progressFromProp, true, animateProgress)
     }
   }
 
-  @ReactProp(name = "progressDirection")
-  fun setProgressDirection(circularProgressBar: CircularProgressBar, progressDirection: Int) {
-    circularProgressBar.progressDirection = if (progressDirection == 0) CircularProgressBar.ProgressDirection.TO_RIGHT else CircularProgressBar.ProgressDirection.TO_LEFT;
+  @ReactProp(name = "clockwiseFill")
+  fun setProgressDirection(circularProgressBar: CircularProgressBar, clockwise: Boolean) {
+    circularProgressBar.progressDirection = if (clockwise) CircularProgressBar.ProgressDirection.TO_RIGHT else CircularProgressBar.ProgressDirection.TO_LEFT;
   }
 
   @ReactProp(name = "roundBorder")
@@ -126,6 +124,11 @@ class CircularProgressBarViewManager : SimpleViewManager<CircularProgressBar>() 
   @ReactProp(name = "animateProgress")
   fun setAnimateProgress(circularProgressBar: CircularProgressBar, animate: Boolean) {
     animateProgress = animate;
+  }
+
+  @ReactProp(name = "startAngle")
+  fun setStartAngle(circularProgressBar: CircularProgressBar, startAngle: Float) {
+    circularProgressBar.defaultAngle = startAngle;
   }
 
   override fun getCommandsMap(): MutableMap<String, Int> {

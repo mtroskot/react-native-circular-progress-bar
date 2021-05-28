@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		036B034A265FA55F004E04C1 /* CircularProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036B0349265FA55F004E04C1 /* CircularProgressBar.swift */; };
 		F4FF95D7245B92E800C19C63 /* CircularProgressBarViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4FF95D6245B92E800C19C63 /* CircularProgressBarViewManager.swift */; };
 /* End PBXBuildFile section */
 
@@ -23,6 +24,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		036B0349265FA55F004E04C1 /* CircularProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircularProgressBar.swift; sourceTree = "<group>"; };
 		134814201AA4EA6300B7C361 /* libCircularProgressBar.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCircularProgressBar.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		B3E7B5891CC2AC0600A0062D /* CircularProgressBarViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CircularProgressBarViewManager.m; sourceTree = "<group>"; };
 		F4FF95D5245B92E700C19C63 /* CircularProgressBar-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CircularProgressBar-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -51,6 +53,7 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				036B0349265FA55F004E04C1 /* CircularProgressBar.swift */,
 				F4FF95D6245B92E800C19C63 /* CircularProgressBarViewManager.swift */,
 				B3E7B5891CC2AC0600A0062D /* CircularProgressBarViewManager.m */,
 				F4FF95D5245B92E700C19C63 /* CircularProgressBar-Bridging-Header.h */,
@@ -116,6 +119,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F4FF95D7245B92E800C19C63 /* CircularProgressBarViewManager.swift in Sources */,
+				036B034A265FA55F004E04C1 /* CircularProgressBar.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

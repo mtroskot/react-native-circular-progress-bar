@@ -16,9 +16,10 @@ type CircularProgressBarProps = {
   progressBarColor: string;
   progressBarWidth: number;
   backgroundProgressBarWidth: number;
-  progress: number;
+  fill: number;
   startAngle: number;
-  progressDirection: 0 | 1;
+  archAngle: number;
+  clockwiseFill: boolean;
   roundBorder: boolean;
   indeterminateMode: boolean;
   matchAngleAndProgress: boolean;
