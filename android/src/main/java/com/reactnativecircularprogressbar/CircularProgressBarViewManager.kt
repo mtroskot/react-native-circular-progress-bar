@@ -17,9 +17,8 @@ import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.annotations.ReactProp
 
 class CircularProgressBarViewManager : SimpleViewManager<CircularProgressBar>() {
-  private var matchAngleAndProgress = false
   private var progressDuration = 1000L; // 1 second
-  private var progressInterpolator = 0;
+  private var animationEasing = "linear";
   private var progressDelay = 0L;
   private var animateProgress = false
   private var progressFromProp = 0f;
@@ -54,15 +53,18 @@ class CircularProgressBarViewManager : SimpleViewManager<CircularProgressBar>() 
   @ReactProp(name = "fill")
   fun setProgress(circularProgressBar: CircularProgressBar, fill: Float) {
     progressFromProp = fill;
-    calculateProgress(circularProgressBar, fill, matchAngleAndProgress, animateProgress)
+    calculateProgress(circularProgressBar, fill, animateProgress)
+  }
+
+  @ReactProp(name = "startingAngle")
+  fun setStartingAngle(circularProgressBar: CircularProgressBar, startingAngle: Float) {
+    circularProgressBar.defaultAngle = startingAngle;
   }
 
   @ReactProp(name = "archAngle")
   fun setArchAngle(circularProgressBar: CircularProgressBar, archAngle: Float) {
     circularProgressBar.startAngle = archAngle;
-    if (matchAngleAndProgress) {
-      calculateProgress(circularProgressBar, progressFromProp, true, animateProgress)
-    }
+      calculateProgress(circularProgressBar, progressFromProp, animateProgress)
   }
 
   @ReactProp(name = "clockwiseFill")
@@ -81,54 +83,59 @@ class CircularProgressBarViewManager : SimpleViewManager<CircularProgressBar>() 
   }
 
   @ReactProp(name = "progressBarGradient")
-  fun setProgressBarGradient(circularProgressBar: CircularProgressBar, gradientProps: ReadableMap) {
+  fun setProgressBarGradient(circularProgressBar: CircularProgressBar, gradientProps: ReadableMap?) {
+  if(gradientProps!=null){
     circularProgressBar.progressBarColorStart = Color.parseColor(gradientProps.getString("startColor"));
     circularProgressBar.progressBarColorEnd = Color.parseColor(gradientProps.getString("endColor"));
-    val gradientDirection: CircularProgressBar.GradientDirection = when (gradientProps.getInt("gradientDirection")) {
-      1 -> CircularProgressBar.GradientDirection.LEFT_TO_RIGHT
-      2 -> CircularProgressBar.GradientDirection.RIGHT_TO_LEFT
-      3 -> CircularProgressBar.GradientDirection.TOP_TO_BOTTOM
+    val gradientDirection: CircularProgressBar.GradientDirection = when (gradientProps.getString("gradientDirection")) {
+      "LEFT_TO_RIGHT" -> CircularProgressBar.GradientDirection.LEFT_TO_RIGHT
+      "RIGHT_TO_LEFT" -> CircularProgressBar.GradientDirection.RIGHT_TO_LEFT
+      "TOP_TO_BOTTOM" -> CircularProgressBar.GradientDirection.TOP_TO_BOTTOM
       else -> CircularProgressBar.GradientDirection.BOTTOM_TO_END
     }
     circularProgressBar.progressBarColorDirection = gradientDirection;
+    }else{
+        circularProgressBar.progressBarColorStart = null
+        circularProgressBar.progressBarColorEnd = null
+    }
   }
 
   @ReactProp(name = "backgroundProgressBarGradient")
-  fun setBackgroundProgressBarGradient(circularProgressBar: CircularProgressBar, gradientProps: ReadableMap) {
+  fun setBackgroundProgressBarGradient(circularProgressBar: CircularProgressBar, gradientProps: ReadableMap?) {
+  if(gradientProps!=null){
     circularProgressBar.backgroundProgressBarColorStart = Color.parseColor(gradientProps.getString("startColor"));
     circularProgressBar.backgroundProgressBarColorEnd = Color.parseColor(gradientProps.getString("endColor"));
-    val gradientDirection: CircularProgressBar.GradientDirection = when (gradientProps.getInt("gradientDirection")) {
-      1 -> CircularProgressBar.GradientDirection.LEFT_TO_RIGHT
-      2 -> CircularProgressBar.GradientDirection.RIGHT_TO_LEFT
-      3 -> CircularProgressBar.GradientDirection.TOP_TO_BOTTOM
+    val gradientDirection: CircularProgressBar.GradientDirection = when (gradientProps.getString("gradientDirection")) {
+       "LEFT_TO_RIGHT" -> CircularProgressBar.GradientDirection.LEFT_TO_RIGHT
+       "RIGHT_TO_LEFT" -> CircularProgressBar.GradientDirection.RIGHT_TO_LEFT
+       "TOP_TO_BOTTOM" -> CircularProgressBar.GradientDirection.TOP_TO_BOTTOM
       else -> CircularProgressBar.GradientDirection.BOTTOM_TO_END
     }
     circularProgressBar.backgroundProgressBarColorDirection = gradientDirection;
+  }else{
+  circularProgressBar.backgroundProgressBarColorStart = null
+  circularProgressBar.backgroundProgressBarColorEnd = null
+  }
   }
 
   @ReactProp(name = "animationConfig")
   fun setAnimationConfig(circularProgressBar: CircularProgressBar, animationConfig: ReadableMap) {
     progressDuration = animationConfig.getInt("duration").toLong();
-    progressInterpolator = animationConfig.getInt("progressInterpolator");
-    if (animationConfig.hasKey("progressDelay")) {
-      progressDelay = animationConfig.getInt("progressDelay").toLong();
+    if (animationConfig.hasKey("delay")) {
+      progressDelay = animationConfig.getInt("delay").toLong();
+    }else {
+      progressDelay = 0L;
     }
-  }
-
-  @ReactProp(name = "matchAngleAndProgress")
-  fun setMatchAngleAndProgress(circularProgressBar: CircularProgressBar, match: Boolean) {
-    matchAngleAndProgress = match;
-    calculateProgress(circularProgressBar, progressFromProp, matchAngleAndProgress, animateProgress)
+    if (animationConfig.hasKey("easing")) {
+       animationEasing = animationConfig.getString("easing").toString();
+    }else {
+      animationEasing = "linear";
+    }
   }
 
   @ReactProp(name = "animateProgress")
   fun setAnimateProgress(circularProgressBar: CircularProgressBar, animate: Boolean) {
     animateProgress = animate;
-  }
-
-  @ReactProp(name = "startAngle")
-  fun setStartAngle(circularProgressBar: CircularProgressBar, startAngle: Float) {
-    circularProgressBar.defaultAngle = startAngle;
   }
 
   override fun getCommandsMap(): MutableMap<String, Int> {
@@ -142,9 +149,9 @@ class CircularProgressBarViewManager : SimpleViewManager<CircularProgressBar>() 
       COMMAND_ANIMATE_PROGRESS -> {
         var progress = args?.getDouble(0)?.toFloat();
         var duration = args?.getDouble(1)?.toLong();
+        var delay = args?.getDouble(2)?.toLong();
         if (progress !== null && duration !== null) {
-          Log.d("SETO KAIBA", progress.toString() + " " + duration);
-          view.setProgressWithAnimation(progress, duration)
+          view.setProgressWithAnimation(progress, duration,getTimeInterpolator(animationEasing),delay)
         }
         return
       }
@@ -155,24 +162,21 @@ class CircularProgressBarViewManager : SimpleViewManager<CircularProgressBar>() 
     }
   }
 
-  private fun calculateProgress(circularProgressBar: CircularProgressBar, progress: Float, adjustProgressWithAngle: Boolean = false, animate: Boolean = false) {
+  private fun calculateProgress(circularProgressBar: CircularProgressBar, progress: Float, animate: Boolean = false) {
     var newProgress = progress;
-    if (adjustProgressWithAngle) {
-      newProgress = circularProgressBar.startAngle / 360f * progress;
-    }
     if (animate) {
-      circularProgressBar.setProgressWithAnimation(newProgress, progressDuration, getTimeInterpolator(progressInterpolator), progressDelay)
+      circularProgressBar.setProgressWithAnimation(newProgress, progressDuration, getTimeInterpolator(animationEasing), progressDelay)
     } else {
       circularProgressBar.progress = newProgress;
     }
   }
 
-  private fun getTimeInterpolator(type: Int): TimeInterpolator? {
+  private fun getTimeInterpolator(type: String): TimeInterpolator? {
     return when (type) {
-      0 -> LinearInterpolator()
-      1 -> DecelerateInterpolator()
-      2 -> AccelerateInterpolator()
-      3 -> AccelerateDecelerateInterpolator()
+      "linear" -> LinearInterpolator()
+      "easeOut" -> DecelerateInterpolator()
+      "easeIn" -> AccelerateInterpolator()
+      "easeInOut" -> AccelerateDecelerateInterpolator()
       else -> LinearInterpolator()
     }
   }

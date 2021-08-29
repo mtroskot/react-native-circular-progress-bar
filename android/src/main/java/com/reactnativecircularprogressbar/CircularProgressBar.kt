@@ -46,7 +46,7 @@ class CircularProgressBar(context: Context, attrs: AttributeSet? = null) : View(
     }
   var defaultAngle: Float = 270f  // 12 o'clock
     set(value) {
-      field = value.coerceIn(0f, 270f)
+      field = value.coerceIn(0f, 360f)
       invalidate()
     }
   var progressMax: Float = DEFAULT_MAX_VALUE
@@ -120,15 +120,12 @@ class CircularProgressBar(context: Context, attrs: AttributeSet? = null) : View(
     set(value) {
       field = value
       foregroundPaint.strokeCap = if (field) Paint.Cap.ROUND else Paint.Cap.BUTT
+      backgroundPaint.strokeCap = if (field) Paint.Cap.ROUND else Paint.Cap.BUTT
       invalidate()
     }
   var startAngle: Float = 0f
     set(value) {
       field = value
-//      while (angle > 360) {
-//        angle -= 360
-//      }
-//      field = if (angle < 0) 0f else if (angle > 360) 360f else angle
       invalidate()
     }
   var progressDirection: ProgressDirection = ProgressDirection.TO_RIGHT
@@ -253,24 +250,12 @@ class CircularProgressBar(context: Context, attrs: AttributeSet? = null) : View(
   override fun onDraw(canvas: Canvas) {
     super.onDraw(canvas)
 
-//    canvas.drawOval(rectF, backgroundPaint)
     var circle = if (progressDirection.isToRight()) 360f else -360f;
-    canvas.drawArc(rectF, defaultAngle + startAngle / 2, circle - startAngle, false, backgroundPaint)
-//    val startPosition = startAngle + DEFAULT_START_ANGLE
-//    canvas.drawArc(rectF, -90f, 360 - startAngle, false, backgroundPaint)
-
-    val realProgress = (if (indeterminateMode) progressIndeterminateMode else progress) * DEFAULT_MAX_VALUE / progressMax
-
-    val isToRightFromIndeterminateMode = indeterminateMode && progressDirectionIndeterminateMode.isToRight()
-    val isToRightFromNormalMode = !indeterminateMode && progressDirection.isToRight()
-//    val angle = (if (isToRightFromIndeterminateMode || isToRightFromNormalMode) 360 else -360) * realProgress / 100
-    val angle = (if (isToRightFromIndeterminateMode || isToRightFromNormalMode) 360 - startAngle else -360 + startAngle) * realProgress / 100
-    Log.d("drow", "$startAngleIndeterminateMode $startAngle $angle")
-//    canvas.drawArc(rectF, if (indeterminateMode) startAngleIndeterminateMode else startAngle + DEFAULT_START_ANGLE, angle, false, foregroundPaint)
-//    canvas.drawArc(rectF, startPosition + (startAngle / 2), angle, false, foregroundPaint)
-
-    canvas.drawArc(rectF, defaultAngle + startAngle / 2, (circle - startAngle) * progress / 100, false, foregroundPaint)
-//    canvas.drawArc(rectF, startAngleIndeterminateMode, angle, false, foregroundPaint)
+    var archAngle = if (progressDirection.isToRight()) startAngle else -startAngle;
+    // background path
+    canvas.drawArc(rectF, defaultAngle + archAngle / 2, circle - archAngle, false, backgroundPaint)
+    // progress path
+    canvas.drawArc(rectF, defaultAngle + archAngle / 2, (circle - archAngle) * progress / 100, false, foregroundPaint)
   }
 
   override fun setBackgroundColor(backgroundColor: Int) {
